@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/viewFinder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <androidx.constraintlayout.utils.widget.ImageFilterView
+        android:id="@+id/imgCapture"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:scaleType="fitCenter" />
+
+    <ImageView
+        android:id="@+id/imgEmojiPreview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/dimen_48"
+        android:minWidth="@dimen/dimen_48"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/imgCapture"
+        app:layout_constraintEnd_toEndOf="@id/imgCapture"
+        app:layout_constraintStart_toStartOf="@id/imgCapture"
+        app:layout_constraintTop_toTopOf="@id/imgCapture" />
+
+    <LinearLayout
+        android:id="@+id/lnOption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dimen_4"
+        android:background="@android:color/transparent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+
+        <ImageView
+            android:id="@+id/imgLibrary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_library" />
+
+        <ImageView
+            android:id="@+id/imgLight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_light" />
+
+        <Button
+            android:id="@+id/btCapture"
+            android:layout_width="@dimen/dimen_100"
+            android:layout_height="@dimen/dimen_100"
+            android:background="@drawable/bg_rounded"
+            android:backgroundTint="@color/white" />
+
+        <ImageView
+            android:id="@+id/imgChangeCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:src="@drawable/ic_change_camera" />
+
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/parentEmoji"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_250"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.emoji2.emojipicker.EmojiPickerView
+            android:id="@+id/emojiPicker"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:emojiGridColumns="15" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constrainOption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/dimen_2"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imgBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_8"
+            android:padding="@dimen/dimen_4"
+            android:src="@drawable/ic_arrow_left"
+            app:layout_constraintBottom_toBottomOf="@id/imgContrast"
+            app:layout_constraintEnd_toStartOf="@id/imgContrast"
+            app:layout_constraintTop_toTopOf="@id/imgContrast"/>
+
+        <ImageView
+            android:id="@+id/imgIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add_icon"
+            app:layout_constraintBottom_toBottomOf="@id/imgContrast"
+            app:layout_constraintEnd_toStartOf="@id/imgContrast"
+            app:layout_constraintTop_toTopOf="@id/imgContrast" />
+
+        <ImageView
+            android:id="@+id/imgContrast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dimen_8"
+            android:padding="@dimen/dimen_8"
+            android:src="@drawable/ic_contrast"
+            app:layout_constraintBottom_toBottomOf="@id/imgFilter"
+            app:layout_constraintEnd_toStartOf="@id/imgFilter"
+            app:layout_constraintTop_toTopOf="@id/imgFilter" />
+
+        <ImageView
+            android:id="@+id/imgFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dimen_8"
+            android:padding="@dimen/dimen_4"
+            android:src="@drawable/ic_filter"
+            app:layout_constraintBottom_toBottomOf="@id/imgCrop"
+            app:layout_constraintEnd_toStartOf="@id/imgCrop"
+            app:layout_constraintTop_toTopOf="@id/imgCrop" />
+
+        <ImageView
+            android:id="@+id/imgCrop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dimen_8"
+            android:src="@drawable/icon_crop"
+            app:layout_constraintBottom_toBottomOf="@id/imgDraw"
+            app:layout_constraintEnd_toStartOf="@id/imgDraw"
+            app:layout_constraintTop_toTopOf="@id/imgDraw" />
+
+        <ImageView
+            android:id="@+id/imgDraw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dimen_8"
+            android:padding="@dimen/dimen_4"
+            android:src="@drawable/ic_pencil"
+            app:layout_constraintBottom_toBottomOf="@id/imgDownLoad"
+            app:layout_constraintEnd_toStartOf="@id/imgDownLoad"
+            app:layout_constraintTop_toTopOf="@id/imgDownLoad" />
+
+        <ImageView
+            android:id="@+id/imgDownLoad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dimen_4"
+            android:elevation="2dp"
+            android:padding="@dimen/dimen_8"
+            android:src="@drawable/ic_download"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constrainConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/dimen_2"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imgDone"
+            android:layout_width="@dimen/dimen_48"
+            android:layout_height="@dimen/dimen_48"
+            android:layout_marginEnd="@dimen/dimen_8"
+            android:padding="@dimen/dimen_8"
+            android:src="@drawable/ic_done"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imgCancel"
+            android:layout_width="@dimen/dimen_32"
+            android:layout_height="@dimen/dimen_32"
+            android:layout_marginEnd="@dimen/dimen_4"
+            android:padding="@dimen/dimen_8"
+            android:src="@drawable/ic_cancel"
+            app:layout_constraintBottom_toBottomOf="@id/imgDone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/imgDone" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.example.imageEditor.custom.CropOverlayView
+        android:id="@+id/cropView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RadioGroup
+        android:id="@+id/rgColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/constrainConfirm">
+
+        <RadioButton
+            android:id="@+id/rbBlack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/dimen_4"
+            android:checked="true"
+            app:buttonTint="@color/black" />
+
+        <RadioButton
+            android:id="@+id/rbRed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dimen_4"
+            app:buttonTint="@color/red" />
+
+        <RadioButton
+            android:id="@+id/rbBlue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dimen_4"
+            app:buttonTint="@color/blue" />
+
+        <RadioButton
+            android:id="@+id/rbYellow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dimen_4"
+            app:buttonTint="@color/yellow" />
+
+
+        <RadioButton
+            android:id="@+id/rbOrange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dimen_4"
+            app:buttonTint="@color/orange" />
+
+        <RadioButton
+            android:id="@+id/rbPink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dimen_4"
+            app:buttonTint="@color/pink" />
+
+        <RadioButton
+            android:id="@+id/rbWhite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dimen_4"
+            app:buttonTint="@color/white" />
+    </RadioGroup>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycleViewFilterOption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dimen_32"
+        android:orientation="horizontal"
+        android:paddingEnd="@dimen/dimen_8"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:ignore="RtlSymmetry" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintContrast"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingHorizontal="@dimen/dimen_8"
+        android:paddingTop="@dimen/dimen_8"
+        android:paddingBottom="@dimen/dimen_32"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/tvContrast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/contrast"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <SeekBar
+            android:id="@+id/sbContrast"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:progressTint="@color/saddle_brown"
+            android:thumbTint="@color/saddle_brown"
+            app:layout_constraintBottom_toBottomOf="@id/tvContrast"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/sbBrightness"
+            app:layout_constraintTop_toTopOf="@id/tvContrast" />
+
+
+        <TextView
+            android:id="@+id/tvBrightness"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/dimen_8"
+            android:text="@string/brightness"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvContrast" />
+
+        <SeekBar
+            android:id="@+id/sbBrightness"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:progressTint="@color/saddle_brown"
+            android:thumbTint="@color/saddle_brown"
+            app:layout_constraintBottom_toBottomOf="@id/tvBrightness"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvBrightness"
+            app:layout_constraintTop_toTopOf="@id/tvBrightness" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

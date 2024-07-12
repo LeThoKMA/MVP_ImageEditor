@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Image Editor</string>
+    <string name="error">Error</string>
+    <string name="loading">loading</string>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="add">Add</string>
+    <string name="like">Like</string>
+    <string name="avatar">Avatar</string>
+    <string name="liked_by_others">Liked by %1$s others</string>
+    <string name="shop">Shop</string>
+    <string name="style">Style</string>
+    <string name="igtv">IGTV</string>
+    <string name="auto">Auto</string>
+    <string name="sports">Sports</string>
+    <string name="save_success">Saved</string>
+    <string name="downloading">Downloading…</string>
+    <string name="contrast">Contrast</string>
+    <string name="brightness">Brightness</string>
+    <string name="un_authorize">Login session has expired</string>
+    <string name="empty_favorite_image">There are no favorite images yet</string>
+</resources>
