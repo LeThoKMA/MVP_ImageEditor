@@ -53,6 +53,22 @@
             android:name=".ui.detail.ImageDetailActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".SignInActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SetUpActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".chat.model.SpecificChat"
+            android:exported="false"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

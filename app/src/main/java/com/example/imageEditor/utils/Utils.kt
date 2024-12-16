@@ -1,5 +1,6 @@
 package com.example.imageEditor.utils
 
+import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -9,9 +10,12 @@ import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.provider.OpenableColumns
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.DrawableMarginSpan
+import android.util.Base64
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -19,6 +23,12 @@ import androidx.camera.core.ImageProxy
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.drawToBitmap
 import androidx.emoji2.text.EmojiCompat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.security.SecureRandom
 
 fun setSpanForString(
     text: String,
@@ -188,4 +198,120 @@ fun getEmojiDrawable(
 
 fun Float.dpToPx(context: Context): Int {
     return (this * context.resources.displayMetrics.density).toInt()
+}
+
+fun isVideoFile(context: Context, uri: Uri): Boolean {
+    val contentResolver: ContentResolver = context.contentResolver
+    val type = contentResolver.getType(uri)
+    return type != null && type.startsWith("video");
+}
+
+fun optimizeAndConvertImageToByteArray(bitmap: Bitmap): ByteArray? {
+    // Kích thước tối đa mong muốn của ảnh
+    val maxWidth = 800
+    val maxHeight = 800
+
+    // Tính toán kích thước mới dựa trên tỉ lệ khung hình
+    var width = bitmap.width
+    var height = bitmap.height
+    val ratio = width.toFloat() / height
+    if (width > maxWidth || height > maxHeight) {
+        if (ratio > 1) {
+            width = maxWidth
+            height = (width / ratio).toInt()
+        } else {
+            height = maxHeight
+            width = (height * ratio).toInt()
+        }
+    }
+
+    // Thay đổi kích thước ảnh
+    val newBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true)
+
+    // Chuyển đổi ảnh thành byte array
+    val baos = ByteArrayOutputStream()
+    newBitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos)
+    val byteArray = baos.toByteArray()
+
+    // Giải phóng bộ nhớ của bitmap
+    newBitmap.recycle()
+    return byteArray
+}
+fun convertVideoToByteArray(context: Context, videoUri: Uri?): ByteArray? {
+    val contentResolver = context.contentResolver
+    var inputStream: InputStream? = null
+    return try {
+        // Mở InputStream từ URI
+        inputStream = contentResolver.openInputStream(videoUri!!)
+
+        // Đọc dữ liệu từ InputStream và chuyển đổi thành mảng byte
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        val buffer = ByteArray(1024)
+        var bytesRead: Int
+        while (inputStream!!.read(buffer).also { bytesRead = it } != -1) {
+            byteArrayOutputStream.write(buffer, 0, bytesRead)
+        }
+        byteArrayOutputStream.toByteArray()
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    } finally {
+        if (inputStream != null) {
+            try {
+                inputStream.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+}
+
+fun convertUriToBitmap(context: Context, imageUri: Uri?): Bitmap? {
+    val contentResolver = context.contentResolver
+    var inputStream: InputStream? = null
+    return try {
+        // Mở InputStream từ URI
+        inputStream = contentResolver.openInputStream(imageUri!!)
+
+        // Đọc dữ liệu từ InputStream và chuyển đổi thành đối tượng Bitmap
+        BitmapFactory.decodeStream(inputStream)
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    } finally {
+        if (inputStream != null) {
+            try {
+                inputStream.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+}
+
+suspend fun getVideoFileSize(uri: Uri, context: Context): Long? {
+    return withContext(Dispatchers.IO) {
+        val contentResolver = context.contentResolver
+        var fileSize: Long? = null
+        val cursor = contentResolver.query(uri, null, null, null, null, null)
+
+        cursor?.use { cursor ->
+            val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+            if (cursor.moveToFirst() && sizeIndex != -1) {
+                fileSize = cursor.getLong(sizeIndex)
+            }
+        }
+
+        return@withContext fileSize
+    }
+}
+
+fun generateRandomIV(): ByteArray {
+    val secureRandom = SecureRandom()
+    val iv = ByteArray(12) // 96 bits IV for GCM
+    secureRandom.nextBytes(iv)
+    return iv
+}
+fun ByteArray.byteArrayToString(): String{
+    return Base64.encodeToString(this, Base64.DEFAULT)
 }

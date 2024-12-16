@@ -76,7 +76,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), HomeContract.View, OnC
     }
 
     override fun doubleTapForLikeImage(id: String) {
-        mHomePresenter.likeImage(id)
+       // mHomePresenter.likeImage(id)
     }
 
     override fun clickLike(index: Int) {

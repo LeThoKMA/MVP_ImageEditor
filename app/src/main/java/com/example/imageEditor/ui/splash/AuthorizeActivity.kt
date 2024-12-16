@@ -4,15 +4,19 @@ import android.content.Intent
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.example.imageEditor.SignInActivity
 import com.example.imageEditor.base.BaseActivity
 import com.example.imageEditor.databinding.ActivityAuthorizeBinding
+import com.example.imageEditor.firebase.FireStore
 import com.example.imageEditor.model.response.AuthorizeResponse
 import com.example.imageEditor.repository.AuthorizeRepository
 import com.example.imageEditor.ui.main.MainActivity
 import com.example.imageEditor.utils.AUTHORIZE_DATA
+import com.example.imageEditor.utils.AppKey
 import com.example.imageEditor.utils.SIGN_OF_AUTHORIZE
 import com.example.imageEditor.utils.authorizeUrl
 import com.example.imageEditor.utils.toAuthorizationCode
+import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 
 class AuthorizeActivity : BaseActivity<ActivityAuthorizeBinding>(), AuthorizeContract.View {
@@ -24,19 +28,26 @@ class AuthorizeActivity : BaseActivity<ActivityAuthorizeBinding>(), AuthorizeCon
 
     override fun initView() {
         mPresenter.setView(this)
-        binding.webView.loadUrl(authorizeUrl())
-        binding.webView.webViewClient =
-            object : WebViewClient() {
-                override fun shouldOverrideUrlLoading(
-                    view: WebView?,
-                    request: WebResourceRequest?,
-                ): Boolean {
-                    if (request?.url.toString().contains(SIGN_OF_AUTHORIZE)) {
-                        mPresenter.authorize(request?.url.toString().toAuthorizationCode())
-                    }
-                    return false
-                }
-            }
+        val currentUserId = FireStore().getCurrentUserId()
+        if (currentUserId.isNotEmpty()) {
+            FireStore().updatePublicKeyUser(AppKey.getPublicKey())
+            startActivity(Intent(this, MainActivity::class.java))
+        } else {
+            startActivity(Intent(this, SignInActivity::class.java))
+        }
+//        binding.webView.loadUrl(authorizeUrl())
+//        binding.webView.webViewClient =
+//            object : WebViewClient() {
+//                override fun shouldOverrideUrlLoading(
+//                    view: WebView?,
+//                    request: WebResourceRequest?,
+//                ): Boolean {
+//                    if (request?.url.toString().contains(SIGN_OF_AUTHORIZE)) {
+//                        mPresenter.authorize(request?.url.toString().toAuthorizationCode())
+//                    }
+//                    return false
+//                }
+//            }
     }
 
     override fun initListener() {

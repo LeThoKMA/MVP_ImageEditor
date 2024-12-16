@@ -7,6 +7,7 @@ import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.imageEditor.R
 import com.example.imageEditor.base.BaseActivity
+import com.example.imageEditor.chat.model.ChatFragment
 import com.example.imageEditor.databinding.ActivityMainBinding
 import com.example.imageEditor.ui.create.CreateImageFragment
 import com.example.imageEditor.ui.favourite.FavouriteFragment
@@ -34,6 +35,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     private val mFavouriteFragment by lazy {
         FavouriteFragment.newInstance(mAuthorizeData ?: "")
     }
+    private val chatFragment by lazy { ChatFragment() }
+
 
     override fun getViewBinding(): ActivityMainBinding {
         return ActivityMainBinding.inflate(layoutInflater)
@@ -88,7 +91,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                     true
                 }
 
-                R.id.favourite -> {
+                R.id.message -> {
                     binding.pager2.currentItem = FAVORITE_INDEX
                     true
                 }
@@ -104,7 +107,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         mMainViewPagerAdapter.addFragment(mHomeFragment)
         mMainViewPagerAdapter.addFragment(mSearchFragment)
         mMainViewPagerAdapter.addFragment(mCreateImageFragment)
-        mMainViewPagerAdapter.addFragment(mFavouriteFragment)
+        mMainViewPagerAdapter.addFragment(chatFragment)
         binding.pager2.offscreenPageLimit = mMainViewPagerAdapter.itemCount
         binding.pager2.adapter = mMainViewPagerAdapter
         binding.pager2.isUserInputEnabled = false // disable swiping

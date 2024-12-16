@@ -11,4 +11,6 @@
     <color name="gray_fade">#E9EAEC</color>
     <color name="saddle_brown">#8B4513</color>
     <color name="transparent_dark">#80000000</color>
+    <color name="sky">#5190C3</color>
+
 </resources>

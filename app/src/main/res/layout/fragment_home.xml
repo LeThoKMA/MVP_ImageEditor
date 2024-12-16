@@ -7,10 +7,10 @@
     <ImageView
         android:id="@+id/imgLogo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:paddingTop="@dimen/dimen_10"
         android:paddingBottom="@dimen/dimen_12"
-        android:src="@drawable/ic_instagram_logo"
+        android:src="@drawable/unsplash_svgrepo_com"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

@@ -6,4 +6,11 @@
     </style>
 
     <style name="Theme.ImageEditor" parent="Base.Theme.ImageEditor" />
+    <style name="TintButtonStyle">
+        <item name="backgroundTint">@color/red</item>
+    </style>
+    <style name="ButtonStyle">
+        <item name="background">@drawable/shape_button_rounded</item>
+    </style>
+
 </resources>
