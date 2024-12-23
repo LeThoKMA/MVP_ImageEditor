@@ -2,6 +2,7 @@ package com.example.imageEditor.custom
 
 import android.content.Context
 import android.graphics.ColorFilter
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,7 @@ import com.example.imageEditor.utils.colorFilterList
 import com.example.imageEditor.utils.displayImage
 
 class FilterAdapter(
-    private val url: String,
+    private val url: Any,
     private val context: Context,
     private val onFilterPicked: OnFilterPicked,
 ) :
@@ -24,10 +25,14 @@ class FilterAdapter(
 
         fun bind(
             colorFilter: ColorFilter,
-            url: String,
+            url: Any,
             onFilterPicked: OnFilterPicked,
         ) {
-            imgPreview.displayImage(url)
+            when (url) {
+                is String -> imgPreview.displayImage(Uri.parse(url)) // Chuyển đổi String thành Uri
+                is Uri -> imgPreview.displayImage(url)
+                else -> throw IllegalArgumentException("Unsupported type for url: $url")
+            }
             imgPreview.colorFilter = colorFilter
             imgPreview.setOnClickListener { onFilterPicked.filterPicked(colorFilter) }
         }

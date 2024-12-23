@@ -46,7 +46,7 @@ class ImageAdapter(
                         }
 
                         override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                            onClickImage.clickImage(photo.urls.full)
+                            onClickImage.clickImage(photo.urls.regular)
                             return super.onSingleTapConfirmed(e)
                         }
                     },

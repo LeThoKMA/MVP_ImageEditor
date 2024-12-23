@@ -29,7 +29,7 @@ fun getMethodHttp(
         conn.setRequestProperty(ACCEPT, "application/json")
         conn.setRequestProperty(
             AUTHORIZATION,
-            CLIENT_ID,
+            "Client-ID "+CLIENT_ID,
         )
         conn.connectTimeout = 10000
         conn.connect()

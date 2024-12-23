@@ -1,6 +1,10 @@
 package com.example.imageEditor.utils
 
+import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -9,16 +13,22 @@ import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.provider.MediaStore
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.DrawableMarginSpan
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.camera.core.ImageProxy
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.drawToBitmap
 import androidx.emoji2.text.EmojiCompat
+import java.io.IOException
+import java.io.InputStream
 
 fun setSpanForString(
     text: String,
@@ -188,4 +198,27 @@ fun getEmojiDrawable(
 
 fun Float.dpToPx(context: Context): Int {
     return (this * context.resources.displayMetrics.density).toInt()
+}
+
+fun convertUriToBitmap(context: Context, imageUri: Uri?): Bitmap? {
+    val contentResolver = context.contentResolver
+    var inputStream: InputStream? = null
+    return try {
+        // Mở InputStream từ URI
+        inputStream = imageUri?.let { contentResolver.openInputStream(it) }
+
+        // Đọc dữ liệu từ InputStream và chuyển đổi thành đối tượng Bitmap
+        BitmapFactory.decodeStream(inputStream)
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    } finally {
+        if (inputStream != null) {
+            try {
+                inputStream.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
 }

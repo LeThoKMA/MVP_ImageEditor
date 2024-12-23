@@ -9,6 +9,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PointF
 import android.graphics.RectF
+import android.net.Uri
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
@@ -30,6 +31,7 @@ import com.example.imageEditor.repository.DetailRepository
 import com.example.imageEditor.utils.DEFAULT_EMOJI_SIZE
 import com.example.imageEditor.utils.DEFAULT_PROGRESS_VALUE
 import com.example.imageEditor.utils.RANGE_CONTRAST_AND_BRIGHTNESS
+import com.example.imageEditor.utils.URI
 import com.example.imageEditor.utils.URL
 import com.example.imageEditor.utils.displayImage
 import com.example.imageEditor.utils.displayImageWithBitmap
@@ -44,6 +46,11 @@ class ImageDetailActivity :
     OnFilterPicked {
     private val mImageDetailPresenter by lazy { ImageDetailPresenter(DetailRepository.getInstance()) }
     private val mUrl by lazy { intent.getStringExtra(URL) }
+    private val mUri by lazy {
+        intent.getStringExtra(URI)?.let {
+            Uri.parse(it)
+        }
+    }
     private val mImageListener by lazy { ImageListener() }
     private var mScaleGestureDetector: GestureDetector? = null
     private var isFiltering = false
@@ -83,6 +90,15 @@ class ImageDetailActivity :
                 mImageListener,
             )
         mUrl?.let {
+            binding.img.displayImage(
+                it,
+            ) { bitmap ->
+                mMutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+            }
+            filterAdapter = FilterAdapter(it, this, this)
+            binding.recycleViewFilterOption.adapter = filterAdapter
+        }
+        mUri?.let {
             binding.img.displayImage(
                 it,
             ) { bitmap ->

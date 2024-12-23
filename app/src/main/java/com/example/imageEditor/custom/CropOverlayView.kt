@@ -38,7 +38,7 @@ class CropOverlayView(context: Context, attrs: AttributeSet?) : View(context, at
 
     fun haveInstanceListener() = mCropSuccessCallback != null
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas?.apply {
             cropRect?.let { drawRect(it, paint) }

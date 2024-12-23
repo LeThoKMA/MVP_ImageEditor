@@ -1,6 +1,9 @@
 package com.example.imageEditor.ui.create
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -10,6 +13,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PointF
 import android.graphics.RectF
+import android.provider.MediaStore
 import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
@@ -18,6 +22,8 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCapture.FLASH_MODE_OFF
@@ -38,9 +44,13 @@ import com.example.imageEditor.custom.OnFilterPicked
 import com.example.imageEditor.custom.OnSwipeTouchListener
 import com.example.imageEditor.databinding.FragmentCreateBinding
 import com.example.imageEditor.repository.CreateImageRepository
+import com.example.imageEditor.ui.detail.ImageDetailActivity
 import com.example.imageEditor.utils.DEFAULT_EMOJI_SIZE
 import com.example.imageEditor.utils.DEFAULT_PROGRESS_VALUE
 import com.example.imageEditor.utils.RANGE_CONTRAST_AND_BRIGHTNESS
+import com.example.imageEditor.utils.URI
+import com.example.imageEditor.utils.URL
+import com.example.imageEditor.utils.convertUriToBitmap
 import com.example.imageEditor.utils.displayImageWithBitmap
 import com.example.imageEditor.utils.dpToPx
 import com.example.imageEditor.utils.emojiToDrawable
@@ -52,6 +62,7 @@ class CreateImageFragment :
     CreateImageContract.View,
     CropSuccessCallback,
     OnFilterPicked {
+    private val REQUEST_IMAGE_CAPTURE = 1
     private var mImageCapture: ImageCapture? = null
     private val mPresenter by lazy { CreateImagePresenter(CreateImageRepository.getInstance()) }
 
@@ -95,6 +106,15 @@ class CreateImageFragment :
     private val mListEmoji = mutableListOf<ImageView>()
     private lateinit var filterAdapter: BitmapFilterAdapter
     private lateinit var emoji: String
+    val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        // Callback is invoked after the user selects a media item or closes the
+        // photo picker.
+        uri?.let {
+            val intent = Intent(requireContext(), ImageDetailActivity::class.java)
+            intent.putExtra(URI, it.toString())
+            startActivity(intent)
+        }
+    }
 
     override fun getViewBinding(inflater: LayoutInflater): FragmentCreateBinding {
         return FragmentCreateBinding.inflate(inflater)
@@ -118,8 +138,8 @@ class CreateImageFragment :
             btCapture.setOnClickListener {
                 takePhoto()
             }
-            btCapture.setOnClickListener {
-                takePhoto()
+            imgLibrary.setOnClickListener {
+                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             }
             imgBack.setOnClickListener {
                 resetView()
@@ -215,6 +235,7 @@ class CreateImageFragment :
                 imgEmojiPreview.setImageDrawable(null)
                 imgEmojiPreview.setImageDrawable(emojiToDrawable(it.emoji, requireContext()))
             }
+
         }
         contrastAndBrightness()
     }
@@ -568,5 +589,23 @@ class CreateImageFragment :
     override fun filterPicked(colorFilter: ColorFilter) {
         isFiltering = true
         binding?.imgCapture?.colorFilter = colorFilter
+    }
+
+    private fun dispatchTakePictureIntent() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_DENIED
+        ) {
+            return
+        }
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (takePictureIntent.resolveActivity(requireContext().packageManager) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+        } else {
+            // Thông báo cho người dùng rằng không có ứng dụng camera nào được cài đặt
+            Toast.makeText(requireContext(), "Không tìm thấy ứng dụng camera", Toast.LENGTH_SHORT)
+                .show()
+        }
     }
 }
