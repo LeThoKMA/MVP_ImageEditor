@@ -5,8 +5,15 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import com.example.imageEditor.App
+import com.example.imageEditor.cipher.MyKeystore
 import com.example.imageEditor.utils.FILE_TITLE
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -42,7 +49,7 @@ class DownloadService() {
         val futureTask: FutureTask<Unit> =
             FutureTask(
                 Callable {
-                    val fileName = "image/${UUID.randomUUID()}.jpg"
+                    val fileName = "imageEditor/${UUID.randomUUID()}.jpg"
                     val directory =
                         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     if (!directory.exists()) {
@@ -70,6 +77,47 @@ class DownloadService() {
             onError.invoke(Throwable(e))
         } finally {
             executorService.shutdown()
+        }
+    }
+
+    fun saveImageEncrypt(
+        bitmap: Bitmap,
+        onDownloading: () -> Unit,
+        onSuccess: () -> Unit,
+        onError: (Throwable) -> Unit,
+    ) {
+
+        CoroutineScope(IO).launch {
+            withContext(Main) {
+                onDownloading.invoke()
+            }
+            runCatching {
+                val fileName = "${UUID.randomUUID()}.jpg"
+                val childName = "imageEditor"
+                val directory =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                if (!directory.exists()) {
+                    directory.mkdirs() // Tạo thư mục nếu nó chưa tồn tại
+                }
+                val pathFile = File(directory, childName)
+                if (!pathFile.exists()) {
+                    pathFile.mkdir()
+                }
+                val file = File(pathFile, fileName)
+                FileOutputStream(file).use { it ->
+                    val data = MyKeystore.encryptBitmap(bitmap)
+                    it.write(data)
+                }
+
+            }.fold(
+                onSuccess = {
+                    withContext(Main) {
+                        onSuccess.invoke()
+                    }
+                },
+                onFailure = {
+                    withContext(Main) { onError.invoke(Throwable(it)) }
+                })
         }
     }
 

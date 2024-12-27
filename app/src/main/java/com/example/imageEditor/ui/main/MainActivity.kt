@@ -25,14 +25,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             lifecycle,
         )
     }
-    private val mAuthorizeData by lazy {
-        intent.getStringExtra(AUTHORIZE_DATA)
-    }
     private val mHomeFragment by lazy { HomeFragment() }
     private val mSearchFragment by lazy { SearchFragment() }
     private val mCreateImageFragment by lazy { CreateImageFragment() }
     private val mFavouriteFragment by lazy {
-        FavouriteFragment.newInstance(mAuthorizeData ?: "")
+        FavouriteFragment.newInstance()
     }
 
     override fun getViewBinding(): ActivityMainBinding {
@@ -88,10 +85,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                     true
                 }
 
-//                R.id.favourite -> {
-//                    binding.pager2.currentItem = FAVORITE_INDEX
-//                    true
-//                }
+                R.id.favourite -> {
+                    binding.pager2.currentItem = FAVORITE_INDEX
+                    true
+                }
 
                 else -> {
                     false
@@ -104,7 +101,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         mMainViewPagerAdapter.addFragment(mHomeFragment)
         mMainViewPagerAdapter.addFragment(mSearchFragment)
         mMainViewPagerAdapter.addFragment(mCreateImageFragment)
-     //   mMainViewPagerAdapter.addFragment(mFavouriteFragment)
+        mMainViewPagerAdapter.addFragment(mFavouriteFragment)
         binding.pager2.offscreenPageLimit = mMainViewPagerAdapter.itemCount
         binding.pager2.adapter = mMainViewPagerAdapter
         binding.pager2.isUserInputEnabled = false // disable swiping

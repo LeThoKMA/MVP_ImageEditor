@@ -12,7 +12,7 @@ class CreateImageRepository {
         onDownloading: () -> Unit,
         onError: (Throwable) -> Unit,
     ) {
-        downloadService.saveImage(
+        downloadService.saveImageEncrypt(
             bitmap,
             onSuccess = { onSuccess() },
             onError = { onError(it) },

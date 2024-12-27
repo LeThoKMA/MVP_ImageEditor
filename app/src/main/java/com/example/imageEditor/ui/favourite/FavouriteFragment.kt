@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.imageEditor.R
@@ -24,7 +25,6 @@ class FavouriteFragment :
     BaseFragment<FragmentFavouriteBinding>(),
     FavouriteContract.View,
     OnClickImage {
-    private val mPresenter by lazy { FavouritePresenter(FavoriteRepository.getInstance(this)) }
     private val mAdapter by lazy { FavoriteAdapter(this) }
     private var mPageQuery = 1
     private val mNameUser by lazy {
@@ -33,13 +33,13 @@ class FavouriteFragment :
             AuthorizeResponse::class.java,
         ).username
     }
+    private val favouriteViewModel: FavouriteViewModel by viewModels()
 
     override fun getViewBinding(inflater: LayoutInflater): FragmentFavouriteBinding {
         return FragmentFavouriteBinding.inflate(inflater)
     }
 
     override fun initView() {
-        mPresenter.setView(this)
         binding?.recycleViewFavorite?.adapter = mAdapter
     }
 
@@ -47,35 +47,38 @@ class FavouriteFragment :
     }
 
     override fun initListener() {
-        binding?.recycleViewFavorite?.addOnScrollListener(
-            object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(
-                    recyclerView: RecyclerView,
-                    dx: Int,
-                    dy: Int,
-                ) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    val linearLayoutManager: LinearLayoutManager =
-                        recyclerView.layoutManager as LinearLayoutManager
-                    if (dy > 0 && linearLayoutManager.findLastCompletelyVisibleItemPosition() == mAdapter.currentList.size - 1) {
-                        mPageQuery++
-                        mPresenter.getFavoriteList(mNameUser, mPageQuery)
-                    }
-                }
-            },
-        )
+        favouriteViewModel.data.observe(viewLifecycleOwner){
+            mAdapter.submitList(it)
+        }
+//        binding?.recycleViewFavorite?.addOnScrollListener(
+//            object : RecyclerView.OnScrollListener() {
+//                override fun onScrolled(
+//                    recyclerView: RecyclerView,
+//                    dx: Int,
+//                    dy: Int,
+//                ) {
+//                    super.onScrolled(recyclerView, dx, dy)
+//                    val linearLayoutManager: LinearLayoutManager =
+//                        recyclerView.layoutManager as LinearLayoutManager
+//                    if (dy > 0 && linearLayoutManager.findLastCompletelyVisibleItemPosition() == mAdapter.currentList.size - 1) {
+//                        mPageQuery++
+//                        mPresenter.getFavoriteList(mNameUser, mPageQuery)
+//                    }
+//                }
+//            },
+//        )
     }
 
     override fun setFavoriteList(data: List<PhotoModel>) {
-        if (!mAdapter.currentList.containsAll(data)) {
-            val newList = mAdapter.currentList.toMutableList()
-            newList.addAll(data)
-            if (newList.isEmpty()) {
-                binding?.tvEmpty?.visibility = View.VISIBLE
-            } else {
-                mAdapter.submitList(newList)
-            }
-        }
+//        if (!mAdapter.currentList.containsAll(data)) {
+//            val newList = mAdapter.currentList.toMutableList()
+//            newList.addAll(data)
+//            if (newList.isEmpty()) {
+//                binding?.tvEmpty?.visibility = View.VISIBLE
+//            } else {
+//                mAdapter.submitList(newList)
+//            }
+//        }
     }
 
     override fun onFailure() {
@@ -89,11 +92,9 @@ class FavouriteFragment :
     }
 
     override fun likeImage(id: String) {
-        mPresenter.likeImage(id)
     }
 
     override fun dislikeImage(id: String) {
-        mPresenter.dislikeImage(id)
     }
 
     override fun clickDetailImage(url: String) {
@@ -104,7 +105,6 @@ class FavouriteFragment :
 
     override fun onResume() {
         super.onResume()
-        mPresenter.getFavoriteList(mNameUser)
     }
 
     override fun onPause() {
@@ -118,9 +118,7 @@ class FavouriteFragment :
         private const val DATA = "AuthorizeData"
 
         @JvmStatic
-        fun newInstance(authorizeResponse: String): FavouriteFragment =
-            FavouriteFragment().apply {
-                arguments = bundleOf(Pair(DATA, authorizeResponse))
-            }
+        fun newInstance(): FavouriteFragment =
+            FavouriteFragment()
     }
 }

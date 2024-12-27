@@ -27,6 +27,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.drawToBitmap
 import androidx.emoji2.text.EmojiCompat
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 
@@ -221,4 +222,9 @@ fun convertUriToBitmap(context: Context, imageUri: Uri?): Bitmap? {
             }
         }
     }
+}
+fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream) // Hoặc JPEG
+    return byteArrayOutputStream.toByteArray()
 }
