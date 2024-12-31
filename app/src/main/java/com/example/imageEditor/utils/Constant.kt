@@ -47,3 +47,4 @@ const val AUTHORIZE_DATA = "AUTHORIZE_DATA"
 const val DEFAULT_EMOJI_SIZE = 48f
 const val HTTP_CACHE_SIZE = 10 * 1024 * 1024L
 const val PIN = "PIN"
+const val TAG_NAME = "isLocked"

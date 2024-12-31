@@ -3,12 +3,15 @@ package com.example.imageEditor.apiService
 import android.app.DownloadManager
 import android.content.Context
 import android.graphics.Bitmap
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import com.example.imageEditor.App
 import com.example.imageEditor.cipher.MyKeystore
 import com.example.imageEditor.utils.FILE_TITLE
+import com.example.imageEditor.utils.TAG_NAME
+import com.example.imageEditor.utils.bitmapToByteArray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -44,39 +47,37 @@ class DownloadService() {
         onSuccess: () -> Unit,
         onError: (Throwable) -> Unit,
     ) {
-        onDownloading.invoke()
-        val executorService: ExecutorService = Executors.newCachedThreadPool()
-        val futureTask: FutureTask<Unit> =
-            FutureTask(
-                Callable {
-                    val fileName = "imageEditor/${UUID.randomUUID()}.jpg"
-                    val directory =
-                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                    if (!directory.exists()) {
-                        directory.mkdirs() // Tạo thư mục nếu nó chưa tồn tại
-                    }
-                    try {
-                        val file = File(directory, fileName)
-                        val outputStream = FileOutputStream(file)
-                        // Nén và ghi bitmap vào tệp
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+        CoroutineScope(IO).launch {
+            withContext(Main) {
+                onDownloading.invoke()
+            }
+            runCatching {
+                val fileName = "${UUID.randomUUID()}.jpg"
+                val childName = "imageEditorPublic"
+                val directory =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                if (!directory.exists()) {
+                    directory.mkdirs() // Tạo thư mục nếu nó chưa tồn tại
+                }
+                val pathFile = File(directory, childName)
+                if (!pathFile.exists()) {
+                    pathFile.mkdir()
+                }
+                val file = File(pathFile, fileName)
+                FileOutputStream(file).use { it ->
+                    val data = bitmapToByteArray(bitmap)
+                    it.write(data)
+                }
 
-                        outputStream.flush()
-                        outputStream.close()
-                        return@Callable
-                    } catch (e: IOException) {
-                        throw Throwable(e)
+            }.fold(
+                onSuccess = {
+                    withContext(Main) {
+                        onSuccess.invoke()
                     }
                 },
-            )
-        executorService.submit(futureTask)
-        try {
-            futureTask.get()
-            onSuccess()
-        } catch (e: Exception) {
-            onError.invoke(Throwable(e))
-        } finally {
-            executorService.shutdown()
+                onFailure = {
+                    withContext(Main) { onError.invoke(Throwable(it)) }
+                })
         }
     }
 
@@ -93,7 +94,7 @@ class DownloadService() {
             }
             runCatching {
                 val fileName = "${UUID.randomUUID()}.jpg"
-                val childName = "imageEditor"
+                val childName = "imageEditorPrivate"
                 val directory =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 if (!directory.exists()) {

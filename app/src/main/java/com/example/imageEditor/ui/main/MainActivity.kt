@@ -1,10 +1,14 @@
 package com.example.imageEditor.ui.main
 
 import android.Manifest
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.READ_MEDIA_IMAGES
+import android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import com.example.imageEditor.R
 import com.example.imageEditor.base.BaseActivity
 import com.example.imageEditor.databinding.ActivityMainBinding
@@ -47,13 +51,24 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                     }
                 }
             }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             launcher.launch(
                 arrayOf(
-                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.POST_NOTIFICATIONS,
+                    READ_MEDIA_IMAGES,
+                    READ_MEDIA_VISUAL_USER_SELECTED,
+                    READ_EXTERNAL_STORAGE
+                )
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            launcher.launch(
+                arrayOf(
+                    READ_MEDIA_IMAGES,
                     Manifest.permission.POST_NOTIFICATIONS,
                     Manifest.permission.CAMERA,
                     Manifest.permission.MANAGE_EXTERNAL_STORAGE,
+                    READ_EXTERNAL_STORAGE,
+                    READ_MEDIA_VISUAL_USER_SELECTED
                 ),
             )
         } else {
@@ -61,6 +76,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 arrayOf(
                     Manifest.permission.CAMERA,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    READ_EXTERNAL_STORAGE
                 ),
             )
         }

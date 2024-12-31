@@ -13,6 +13,7 @@ import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.media.ExifInterface
 import android.net.Uri
 import android.provider.MediaStore
 import android.text.SpannableString
@@ -227,4 +228,16 @@ fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
     val byteArrayOutputStream = ByteArrayOutputStream()
     bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream) // Hoặc JPEG
     return byteArrayOutputStream.toByteArray()
+}
+
+fun getCustomExifTag(imagePath: String): Boolean? {
+    return try {
+        val exif = ExifInterface(imagePath)
+        val tagValue = exif.getAttribute(TAG_NAME)
+        tagValue.equals("true")
+    } catch (e: IOException) {
+        e.printStackTrace()
+        println("Không thể đọc tag từ ảnh.")
+        null
+    }
 }

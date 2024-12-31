@@ -25,7 +25,13 @@ class FavouriteFragment :
     BaseFragment<FragmentFavouriteBinding>(),
     FavouriteContract.View,
     OnClickImage {
-    private val mAdapter by lazy { FavoriteAdapter(this) }
+    private val mAdapter by lazy {
+        FavoriteAdapter(onLock = {
+
+        }, onUnlock = {
+
+        })
+    }
     private var mPageQuery = 1
     private val mNameUser by lazy {
         Gson().fromJson(
@@ -41,44 +47,21 @@ class FavouriteFragment :
 
     override fun initView() {
         binding?.recycleViewFavorite?.adapter = mAdapter
+        binding?.swipeRefresh?.setOnRefreshListener {
+            binding?.swipeRefresh?.isRefreshing = false
+        }
     }
 
     override fun initData() {
     }
 
     override fun initListener() {
-        favouriteViewModel.data.observe(viewLifecycleOwner){
+        favouriteViewModel.data.observe(viewLifecycleOwner) {
             mAdapter.submitList(it)
         }
-//        binding?.recycleViewFavorite?.addOnScrollListener(
-//            object : RecyclerView.OnScrollListener() {
-//                override fun onScrolled(
-//                    recyclerView: RecyclerView,
-//                    dx: Int,
-//                    dy: Int,
-//                ) {
-//                    super.onScrolled(recyclerView, dx, dy)
-//                    val linearLayoutManager: LinearLayoutManager =
-//                        recyclerView.layoutManager as LinearLayoutManager
-//                    if (dy > 0 && linearLayoutManager.findLastCompletelyVisibleItemPosition() == mAdapter.currentList.size - 1) {
-//                        mPageQuery++
-//                        mPresenter.getFavoriteList(mNameUser, mPageQuery)
-//                    }
-//                }
-//            },
-//        )
     }
 
     override fun setFavoriteList(data: List<PhotoModel>) {
-//        if (!mAdapter.currentList.containsAll(data)) {
-//            val newList = mAdapter.currentList.toMutableList()
-//            newList.addAll(data)
-//            if (newList.isEmpty()) {
-//                binding?.tvEmpty?.visibility = View.VISIBLE
-//            } else {
-//                mAdapter.submitList(newList)
-//            }
-//        }
     }
 
     override fun onFailure() {
@@ -109,9 +92,6 @@ class FavouriteFragment :
 
     override fun onPause() {
         super.onPause()
-        mPageQuery = 1
-        mAdapter.submitList(null)
-        mAdapter.resetStateList()
     }
 
     companion object {

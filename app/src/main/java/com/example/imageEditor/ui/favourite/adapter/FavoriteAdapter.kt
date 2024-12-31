@@ -3,29 +3,34 @@ package com.example.imageEditor.ui.favourite.adapter
 import android.graphics.Bitmap
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.imageEditor.databinding.ItemFavoriteBinding
+import com.example.imageEditor.ui.favourite.ImageData
 import com.example.imageEditor.utils.displayImageWithBitmap
 
-class FavoriteAdapter(private val onClickImage: OnClickImage) :
-    ListAdapter<Bitmap, FavoriteAdapter.ViewHolder>(
+class FavoriteAdapter(
+    private val onLock: (ImageData) -> Unit,
+    private val onUnlock: (ImageData) -> Unit
+) :
+    ListAdapter<ImageData, FavoriteAdapter.ViewHolder>(
         object :
-            DiffUtil.ItemCallback<Bitmap>() {
+            DiffUtil.ItemCallback<ImageData>() {
             override fun areItemsTheSame(
-                oldItem: Bitmap,
-                newItem: Bitmap,
+                oldItem: ImageData,
+                newItem: ImageData,
             ): Boolean {
-                return oldItem.sameAs(newItem)
+                return oldItem == newItem
             }
 
             override fun areContentsTheSame(
-                oldItem: Bitmap,
-                newItem: Bitmap,
+                oldItem: ImageData,
+                newItem: ImageData,
             ): Boolean {
-                return oldItem.sameAs(newItem)
+                return oldItem == newItem
             }
         },
     ) {
@@ -34,12 +39,26 @@ class FavoriteAdapter(private val onClickImage: OnClickImage) :
     class ViewHolder(private val binding: ItemFavoriteBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bindView(
-            photo: Bitmap,
-            onClickImage: OnClickImage,
-            mImageStateList: SparseBooleanArray,
-            position: Int,
+            photo: ImageData,
+            onLock: (ImageData) -> Unit,
+            onUnlock: (ImageData) -> Unit
         ) {
-            binding.imgFavorite.displayImageWithBitmap(photo)
+            photo.bitmap?.let {
+                binding.imgFavorite.displayImageWithBitmap(it)
+            }
+            if (photo.isLocked) {
+                binding.imgLocked.visibility = View.VISIBLE
+                binding.imgUnLocked.visibility = View.GONE
+            } else {
+                binding.imgLocked.visibility = View.GONE
+                binding.imgUnLocked.visibility = View.VISIBLE
+            }
+            binding.imgLocked.setOnClickListener {
+                onUnlock(photo)
+            }
+            binding.imgUnLocked.setOnClickListener {
+                onLock(photo)
+            }
 
         }
     }
@@ -61,7 +80,7 @@ class FavoriteAdapter(private val onClickImage: OnClickImage) :
         holder: ViewHolder,
         position: Int,
     ) {
-        holder.bindView(getItem(position), onClickImage, mImageStateList, position)
+        holder.bindView(getItem(position), onLock, onUnlock)
     }
 
     fun resetStateList() {

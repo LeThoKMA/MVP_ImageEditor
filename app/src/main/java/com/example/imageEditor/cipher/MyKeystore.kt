@@ -24,7 +24,6 @@ object MyKeystore {
         CoroutineScope(ioDispatcher).launch {
             val alias = ALIAS
             if (isKeyExists(alias)) {
-                println("Key already exists!")
                 return@launch
             }
             val keyGenerator =
