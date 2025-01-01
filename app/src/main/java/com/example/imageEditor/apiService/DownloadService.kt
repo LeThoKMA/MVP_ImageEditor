@@ -43,6 +43,7 @@ class DownloadService() {
 
     fun saveImage(
         bitmap: Bitmap,
+        name: String? = null,
         onDownloading: () -> Unit,
         onSuccess: () -> Unit,
         onError: (Throwable) -> Unit,
@@ -52,7 +53,7 @@ class DownloadService() {
                 onDownloading.invoke()
             }
             runCatching {
-                val fileName = "${UUID.randomUUID()}.jpg"
+                val fileName = name?:"${UUID.randomUUID()}.jpg"
                 val childName = "imageEditorPublic"
                 val directory =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -83,6 +84,7 @@ class DownloadService() {
 
     fun saveImageEncrypt(
         bitmap: Bitmap,
+        name: String? = null,
         onDownloading: () -> Unit,
         onSuccess: () -> Unit,
         onError: (Throwable) -> Unit,
@@ -93,7 +95,7 @@ class DownloadService() {
                 onDownloading.invoke()
             }
             runCatching {
-                val fileName = "${UUID.randomUUID()}.jpg"
+                val fileName = name?:"${UUID.randomUUID()}.jpg"
                 val childName = "imageEditorPrivate"
                 val directory =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)

@@ -25,21 +25,17 @@ class FavouriteFragment :
     BaseFragment<FragmentFavouriteBinding>(),
     FavouriteContract.View,
     OnClickImage {
+    private val favouriteViewModel: FavouriteViewModel by viewModels()
     private val mAdapter by lazy {
         FavoriteAdapter(onLock = {
-
+            //Khóa ảnh
+            favouriteViewModel.lockFile(it)
         }, onUnlock = {
-
+            // Mở khóa ảnh
+            favouriteViewModel.unLockFile(it)
         })
     }
-    private var mPageQuery = 1
-    private val mNameUser by lazy {
-        Gson().fromJson(
-            this.arguments?.getString(DATA),
-            AuthorizeResponse::class.java,
-        ).username
-    }
-    private val favouriteViewModel: FavouriteViewModel by viewModels()
+
 
     override fun getViewBinding(inflater: LayoutInflater): FragmentFavouriteBinding {
         return FragmentFavouriteBinding.inflate(inflater)
@@ -47,17 +43,21 @@ class FavouriteFragment :
 
     override fun initView() {
         binding?.recycleViewFavorite?.adapter = mAdapter
-        binding?.swipeRefresh?.setOnRefreshListener {
-            binding?.swipeRefresh?.isRefreshing = false
-        }
+
     }
 
     override fun initData() {
+        favouriteViewModel.data.observe(viewLifecycleOwner) {
+            mAdapter.submitList(it)
+        }
+        favouriteViewModel.message.observe(viewLifecycleOwner){
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun initListener() {
-        favouriteViewModel.data.observe(viewLifecycleOwner) {
-            mAdapter.submitList(it)
+        binding?.swipeRefresh?.setOnRefreshListener {
+            binding?.swipeRefresh?.isRefreshing = false
         }
     }
 
@@ -88,6 +88,7 @@ class FavouriteFragment :
 
     override fun onResume() {
         super.onResume()
+        favouriteViewModel.getData()
     }
 
     override fun onPause() {

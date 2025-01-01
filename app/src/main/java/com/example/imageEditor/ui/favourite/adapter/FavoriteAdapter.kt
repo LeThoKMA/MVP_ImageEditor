@@ -55,9 +55,13 @@ class FavoriteAdapter(
             }
             binding.imgLocked.setOnClickListener {
                 onUnlock(photo)
+                binding.imgLocked.visibility = View.GONE
+                binding.imgUnLocked.visibility = View.VISIBLE
             }
             binding.imgUnLocked.setOnClickListener {
                 onLock(photo)
+                binding.imgLocked.visibility = View.VISIBLE
+                binding.imgUnLocked.visibility = View.GONE
             }
 
         }
