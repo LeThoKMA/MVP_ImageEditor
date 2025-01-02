@@ -150,6 +150,7 @@ fun emojiToDrawable(
     emoji: String,
     context: Context,
 ): Drawable {
+    EmojiCompat.init(context)
     val processedEmoji = EmojiCompat.get().process(emoji)
 
     // Tạo TextView ẩn để hiển thị emoji

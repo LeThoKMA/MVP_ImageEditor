@@ -11,6 +11,7 @@ import com.example.imageEditor.apiService.DownloadService
 import com.example.imageEditor.cipher.MyKeystore.decryptToBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
@@ -26,16 +27,18 @@ class FavouriteViewModel() : ViewModel() {
     val message: LiveData<String> get() = _message
 
     init {
-       getData()
+        getData()
     }
 
-    fun getData(){
+    fun getData() {
         viewModelScope.launch {
-            merge(
+            combine(
                 readAllFilesInImageEditorPublicDirectory(),
                 readAllFilesInImageEditorPrivateDirectory()
-            ).collect {
-                _data.postValue(it)
+            ) { publicList, privateList ->
+                publicList + privateList // Gộp danh sách public và private
+            }.collect { combinedList ->
+                _data.postValue(combinedList)
             }
         }
     }
@@ -59,7 +62,6 @@ class FavouriteViewModel() : ViewModel() {
                                 try {
                                     // Đọc nội dung file dưới dạng byte array
                                     val content = file.readBytes()
-                                    // Giải mã
                                     val bitmap =
                                         BitmapFactory.decodeByteArray(content, 0, content.size)
                                     imageBitmaps.add(
@@ -137,11 +139,11 @@ class FavouriteViewModel() : ViewModel() {
             deleteFileDirectly(image.path)
             image.bitmap?.let {
                 downloadService.saveImage(it, image.name, onDownloading = {
-                    _message.postValue("Dang chuyen doi")
+                    _message.postValue("Đang chuyển đổi")
                 }, onSuccess = {
-                    _message.postValue("Thanh cong")
+                    _message.postValue("Thành công")
                 }, onError = {
-                    _message.postValue("That bai")
+                    _message.postValue("Thất bại")
                 })
             }
         }
@@ -154,11 +156,11 @@ class FavouriteViewModel() : ViewModel() {
             deleteFileDirectly(image.path)
             image.bitmap?.let {
                 downloadService.saveImageEncrypt(it, image.name, onDownloading = {
-                    _message.postValue("Dang chuyen doi")
+                    _message.postValue("Đang chuyển đổi")
                 }, onSuccess = {
-                    _message.postValue("Thanh cong")
+                    _message.postValue("Thành công")
                 }, onError = {
-                    _message.postValue("That bai")
+                    _message.postValue("Thất bại")
                 })
             }
         }
