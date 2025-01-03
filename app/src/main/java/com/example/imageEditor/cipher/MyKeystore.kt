@@ -26,18 +26,24 @@ object MyKeystore {
             if (isKeyExists(alias)) {
                 return@launch
             }
+            // Tạo một đối tượng KeyGenerator để tạo khóa mã hóa AES, sử dụng "AndroidKeyStore" làm backend lưu trữ an toàn
             val keyGenerator =
                 KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
-            val keyGenParameterSpec = KeyGenParameterSpec.Builder(
-                alias, // Tên alias của khóa
-                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-            )
-                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE) // GCM không dùng PKCS7Padding
-                .setRandomizedEncryptionRequired(true)
-                .build()
 
+            // Xây dựng cấu hình (KeyGenParameterSpec) để thiết lập các thuộc tính cho khóa
+            val keyGenParameterSpec = KeyGenParameterSpec.Builder(
+                alias, // Tên định danh (alias) duy nhất cho khóa, dùng để tham chiếu trong Android Keystore
+                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT // Khóa sẽ được sử dụng cho cả mã hóa và giải mã
+            )
+                .setBlockModes(KeyProperties.BLOCK_MODE_GCM) // Đặt chế độ hoạt động là GCM (Galois/Counter Mode) cho AES
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE) // Không sử dụng padding, phù hợp với GCM mode
+                .setRandomizedEncryptionRequired(true) // Yêu cầu mã hóa phải ngẫu nhiên (không cho phép giá trị khởi tạo IV lặp lại)
+                .build() // Hoàn thành việc xây dựng cấu hình
+
+            // Khởi tạo đối tượng KeyGenerator với cấu hình KeyGenParameterSpec
             keyGenerator.init(keyGenParameterSpec)
+
+            // Tạo khóa AES mới dựa trên cấu hình và lưu nó vào Android Keystore
             keyGenerator.generateKey()
         }
     }
@@ -61,21 +67,20 @@ object MyKeystore {
         return iv + encryptedData
     }
 
-    suspend fun decryptToBitmap(encryptedData: ByteArray) =
-        withContext(IO) {
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            // Tách IV (12 byte đầu)
-            val iv = encryptedData.copyOfRange(0, 12)
-            val encryptedBytes = encryptedData.copyOfRange(12, encryptedData.size)
-            val ivSpec = GCMParameterSpec(128, iv)
+    suspend fun decryptToBitmap(encryptedData: ByteArray) = withContext(IO) {
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        // Tách IV (12 byte đầu)
+        val iv = encryptedData.copyOfRange(0, 12)
+        val encryptedBytes = encryptedData.copyOfRange(12, encryptedData.size)
+        val ivSpec = GCMParameterSpec(128, iv)
 
-            cipher.init(Cipher.DECRYPT_MODE, getAESKey(), ivSpec)
+        cipher.init(Cipher.DECRYPT_MODE, getAESKey(), ivSpec)
 
-            val originalData = cipher.doFinal(encryptedBytes)
+        val originalData = cipher.doFinal(encryptedBytes)
 
-            // Chuyển byte array về Bitmap
-            BitmapFactory.decodeByteArray(originalData, 0, originalData.size)
-        }
+        // Chuyển byte array về Bitmap
+        BitmapFactory.decodeByteArray(originalData, 0, originalData.size)
+    }
 
 
     private fun isKeyExists(alias: String): Boolean {

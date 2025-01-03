@@ -166,11 +166,6 @@ class LoginActivity : AppCompatActivity() {
 
                 override fun onAuthenticationFailed() {
                     super.onAuthenticationFailed()
-                    Toast.makeText(
-                        this@LoginActivity,
-                        "Xác thực không thành công!",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
             })
 
