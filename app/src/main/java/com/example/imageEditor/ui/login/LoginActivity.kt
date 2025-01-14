@@ -78,6 +78,18 @@ class LoginActivity : AppCompatActivity() {
         binding.btnLogin.setOnClickListener {
             handleLogin()
         }
+        binding.textViewPass.setOnClickListener {
+            binding.btnLogin.visibility = View.INVISIBLE
+            binding.lnRegister.visibility = View.VISIBLE
+            binding.textView.visibility = View.GONE
+            binding.btnConfirm.visibility = View.VISIBLE
+            binding.textViewPass.visibility = View.GONE
+
+            if (password != null) {
+                binding.tvConfirmPassword.visibility = View.GONE
+                binding.edtConfirmPassword.visibility = View.GONE
+            }
+        }
         binding.btnConfirm.setOnClickListener {
             if (password == null) {
                 if (binding.edtPassword.text.toString()
@@ -90,6 +102,7 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, "Mật khẩu không khớp", Toast.LENGTH_SHORT).show()
                 } else {
                     MyEncryptPreference(this).saveData(PIN, binding.edtPassword.text.toString())
+                    startActivity(Intent(this, MainActivity::class.java))
                 }
             } else {
                 if (binding.edtPassword.text.toString()
